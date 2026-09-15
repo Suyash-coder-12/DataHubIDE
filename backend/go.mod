@@ -1,6 +1,6 @@
 module github.com/DataHubIDE/backend
 
-go 1.27.1
+go 1.23
 
 require github.com/docker/docker v28.5.2+incompatible
 
