@@ -19,24 +19,24 @@ DataHubIDE is powered by a Next.js (React) frontend and an ultra-fast Go backend
 
 ```mermaid
 graph TD
-    subgraph Frontend [Next.js UI]
-        IDE[IDE Workspace]
-        LangSelect[Language Selector]
-        Editor[Monaco Editor]
-        Term[Terminal Pane]
+    subgraph Frontend ["Next.js UI"]
+        IDE["IDE Workspace"]
+        LangSelect["Language Selector"]
+        Editor["Monaco Editor"]
+        Term["Terminal Pane"]
         
         IDE --> LangSelect
         IDE --> Editor
         IDE --> Term
     end
 
-    subgraph Backend [Go Execution Engine]
-        API[/api/run]
-        LocalExec[Local exec.Command]
-        CloudFallback[Godbolt API Fallback]
+    subgraph Backend ["Go Execution Engine"]
+        API["/api/run"]
+        LocalExec["Local exec.Command"]
+        CloudFallback["Godbolt API Fallback"]
         
         API --> LocalExec
-        LocalExec -. On Missing Compiler .-> CloudFallback
+        LocalExec -. "On Missing Compiler" .-> CloudFallback
     end
     
     Editor -- "POST /api/run" --> API
