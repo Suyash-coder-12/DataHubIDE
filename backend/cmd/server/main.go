@@ -253,10 +253,24 @@ func handleRunCode(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	mux := http.NewServeMux()
+	
+	// API Route
 	mux.HandleFunc("/api/run", handleRunCode)
+	
+	// Serve Next.js static files (output of npm run build)
+	fsPath := "../frontend/out"
+	if _, err := os.Stat(fsPath); os.IsNotExist(err) {
+		fsPath = "./frontend/out" // Docker deployment path
+	}
+	mux.Handle("/", http.FileServer(http.Dir(fsPath)))
 	
 	handler := corsMiddleware(mux)
 
-	fmt.Println("Simplified Local Compiler Backend running on port 8080...")
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	fmt.Printf("Simplified Local Compiler Backend running on port %s...\n", port)
+	log.Fatal(http.ListenAndServe(":"+port, handler))
 }

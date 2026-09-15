@@ -32,7 +32,7 @@ export default function IDEWorkspace() {
     terminalRefOuter.current.writeln(`\x1b[1;34m> Running ${activeFile}...\x1b[0m\r\n`);
     
     try {
-      const response = await fetch('http://localhost:8080/api/run', {
+      const response = await fetch('/api/run', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
