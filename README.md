@@ -66,7 +66,7 @@ The backend handles code execution and API fallback.
 cd backend
 go run ./cmd/server/main.go
 ```
-*The server will start on `http://localhost:8080`*
+*The server will start on `https://datahubide.onrender.com`*
 
 ### 2. Start the Frontend
 The frontend provides the interactive user interface.
@@ -75,13 +75,13 @@ cd frontend
 npm install
 npm run dev
 ```
-*The UI will be accessible at `http://localhost:3000`*
+*The UI will be accessible at `https://datahubide.onrender.com`*
 
 ---
 
 ## 💻 Usage
 
-1. Open `http://localhost:3000` in your browser.
+1. Open `https://datahubide.onrender.com` in your browser.
 2. Select your preferred programming language from the left sidebar (C, C++, Python, Go, JS).
 3. The editor will automatically populate with a standard "Hello World" template for that language.
 4. Click the **Run** button at the top right.
