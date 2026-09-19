@@ -11,8 +11,15 @@ RUN npm run build
 # Stage 2: Build the Go Backend
 FROM golang:1.23-alpine AS backend-builder
 WORKDIR /app/backend
+
+# Install gcc and musl-dev for CGO (required by sqlite3)
+RUN apk add --no-cache gcc musl-dev
+ENV CGO_ENABLED=1
+
 # Copy go.mod
 COPY backend/go.mod ./
+COPY backend/go.sum ./
+
 # Copy the rest of the backend source and build the binary
 COPY backend/ ./
 RUN go build -o server ./cmd/server/main.go
