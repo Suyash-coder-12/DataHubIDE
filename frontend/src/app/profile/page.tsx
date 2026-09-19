@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useEffect, useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 import { ActivityCalendar } from 'react-activity-calendar';
 
-export default function ProfilePage() {
-  const { id } = useParams();
+function ProfilePageContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
   const { token, userId } = useAuthStore();
   const [profileData, setProfileData] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -265,7 +266,7 @@ export default function ProfilePage() {
                 <ul className="divide-y divide-gray-200 dark:divide-corporate-blue-700">
                   {modalUsers.map(u => (
                     <li key={u.id}>
-                      <a href={`/profile/${u.id}`} className="flex items-center space-x-4 py-3 hover:bg-gray-50 dark:hover:bg-corporate-blue-700 rounded-lg px-2 transition-colors">
+                      <a href={`/profile?id=${u.id}`} className="flex items-center space-x-4 py-3 hover:bg-gray-50 dark:hover:bg-corporate-blue-700 rounded-lg px-2 transition-colors">
                         <div className="w-10 h-10 rounded-full bg-corporate-red-500 flex items-center justify-center text-white overflow-hidden flex-shrink-0">
                           {u.avatar_url ? (
                             <img src={u.avatar_url} alt="avatar" className="w-full h-full object-cover" />
@@ -291,5 +292,13 @@ export default function ProfilePage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-gray-500">Loading profile...</div>}>
+      <ProfilePageContent />
+    </Suspense>
   );
 }

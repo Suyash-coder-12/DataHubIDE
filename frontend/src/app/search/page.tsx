@@ -55,7 +55,7 @@ export default function SearchPage() {
           <ul className="divide-y divide-gray-200 dark:divide-corporate-blue-700">
             {results.map((user) => (
               <li key={user.id} className="hover:bg-gray-50 dark:hover:bg-corporate-blue-900 transition-colors">
-                <Link href={`/profile/${user.id}`} className="block px-6 py-4">
+                <Link href={`/profile?id=${user.id}`} className="block px-6 py-4">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <div className="h-12 w-12 rounded-full bg-corporate-red-500 flex items-center justify-center text-white font-bold text-xl">

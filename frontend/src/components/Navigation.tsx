@@ -48,7 +48,7 @@ export default function Navigation() {
           </div>
           
           <div className="flex items-center space-x-4">
-            <Link href={`/profile/${userId}`} className="flex items-center hover:text-corporate-red-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+            <Link href={`/profile?id=${userId}`} className="flex items-center hover:text-corporate-red-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">
               <User className="h-4 w-4 mr-2" />
               {studentId}
             </Link>
