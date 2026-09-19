@@ -10,6 +10,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
+
+	"github.com/DataHubIDE/backend/internal/db"
+	"github.com/DataHubIDE/backend/internal/handlers"
+	"github.com/DataHubIDE/backend/internal/middleware"
 )
 
 type RunRequest struct {
@@ -245,6 +250,13 @@ func handleRunCode(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		resp.Error = err.Error()
+	} else {
+		// Record contribution on successful run
+		// Since we use middleware.JWTAuthMiddleware optionally on run, we check context
+		claims, authErr := middleware.GetUserFromContext(r.Context())
+		if authErr == nil {
+			handlers.RecordContribution(claims.UserID)
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -252,18 +264,54 @@ func handleRunCode(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// Initialize Database
+	err := db.InitDB("datahub.db")
+	if err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
+	}
+
 	mux := http.NewServeMux()
 	
-	// API Route
-	mux.HandleFunc("/api/run", handleRunCode)
+	// API Routes
+	// Public routes
+	mux.HandleFunc("/api/auth/register", handlers.Register)
+	mux.HandleFunc("/api/auth/login", handlers.Login)
+	mux.HandleFunc("/api/users/profile", handlers.GetProfile) // Using query param id
+	mux.HandleFunc("/api/users/search", handlers.SearchUsers)
+	mux.HandleFunc("/api/users/followers", handlers.GetFollowers)
+	mux.HandleFunc("/api/users/following", handlers.GetFollowing)
+
+	// Protected routes using middleware wrapper manually for now
+	mux.Handle("/api/run", middleware.JWTAuthMiddleware(http.HandlerFunc(handleRunCode)))
+	mux.Handle("/api/users/profile/update", middleware.JWTAuthMiddleware(http.HandlerFunc(handlers.UpdateProfile)))
+	mux.Handle("/api/users/follow", middleware.JWTAuthMiddleware(http.HandlerFunc(handlers.ToggleFollow)))
 	
+	// Admin routes
+	mux.Handle("/api/admin/users", middleware.JWTAuthMiddleware(http.HandlerFunc(handlers.ListUsers)))
+	mux.Handle("/api/admin/users/delete", middleware.JWTAuthMiddleware(http.HandlerFunc(handlers.DeleteUser)))
+
 	// Serve Next.js static files (output of npm run build)
 	fsPath := "../frontend/out"
 	if _, err := os.Stat(fsPath); os.IsNotExist(err) {
 		fsPath = "./frontend/out" // Docker deployment path
 	}
-	mux.Handle("/", http.FileServer(http.Dir(fsPath)))
 	
+	// Ensure SPA routing works (fallback to index.html if not an API route and file not found)
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/api/") {
+			http.NotFound(w, r)
+			return
+		}
+		
+		path := filepath.Join(fsPath, r.URL.Path)
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			// fallback to index.html
+			http.ServeFile(w, r, filepath.Join(fsPath, "index.html"))
+			return
+		}
+		http.FileServer(http.Dir(fsPath)).ServeHTTP(w, r)
+	})
+
 	handler := corsMiddleware(mux)
 
 	port := os.Getenv("PORT")

@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/authStore';
 import MonacoEditor from './EditorPane/MonacoEditor';
 import XtermTerminal, { TerminalRef } from './TerminalPane/XtermTerminal';
 import LanguageSelector from './Sidebar/LanguageSelector';
@@ -8,8 +10,23 @@ import LanguageSelector from './Sidebar/LanguageSelector';
 export default function IDEWorkspace() {
   const [activeFile, setActiveFile] = useState('main.c');
   const [isRunning, setIsRunning] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const editorRefOuter = useRef<any>(null);
   const terminalRefOuter = useRef<TerminalRef | null>(null);
+  const { token } = useAuthStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !token) {
+      router.push('/login');
+    }
+  }, [token, router, mounted]);
+
+  if (!mounted || !token) return null;
 
   const getLanguage = (filename: string) => {
     if (filename.endsWith('.go')) return 'go';
@@ -32,10 +49,11 @@ export default function IDEWorkspace() {
     terminalRefOuter.current.writeln(`\x1b[1;34m> Running ${activeFile}...\x1b[0m\r\n`);
     
     try {
-      const response = await fetch('/api/run', {
+      const response = await fetch('http://localhost:8080/api/run', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ language, code }),
       });
@@ -66,14 +84,14 @@ export default function IDEWorkspace() {
       <div className="flex-1 flex min-w-0">
         
         {/* Left Pane: Code Editor */}
-        <div className="flex-1 flex flex-col min-w-0 border-r border-[#282c34]">
+        <div className="flex-1 flex flex-col min-w-0 border-r border-[#282c34] dark:border-corporate-blue-700">
           {/* Editor Header */}
-          <div className="h-12 bg-[#21252b] flex items-center justify-between px-4">
+          <div className="h-12 bg-corporate-blue-800 flex items-center justify-between px-4 text-white">
              <div className="text-sm font-semibold">{activeFile}</div>
              <button 
                onClick={handleRunCode}
                disabled={isRunning}
-               className={`text-white px-4 py-1.5 text-sm rounded transition-colors shadow-sm font-medium flex items-center space-x-1 ${isRunning ? 'bg-gray-600' : 'bg-[#007acc] hover:bg-[#005f9e]'}`}>
+               className={`text-white px-4 py-1.5 text-sm rounded transition-colors shadow-sm font-medium flex items-center space-x-1 ${isRunning ? 'bg-gray-600' : 'bg-corporate-red-500 hover:bg-corporate-red-600'}`}>
                {isRunning ? (
                  <>
                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -96,7 +114,7 @@ export default function IDEWorkspace() {
         {/* Right Pane: Terminal / Output */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Terminal Header */}
-          <div className="h-12 bg-[#21252b] flex items-center justify-between px-4">
+          <div className="h-12 bg-corporate-blue-800 flex items-center justify-between px-4 text-white">
              <div className="text-sm font-semibold">Output</div>
              <div className="flex space-x-2 text-[#5c6370]">
                 {/* Placeholder Icons for right side of output */}

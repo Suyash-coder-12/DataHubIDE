@@ -1,0 +1,17 @@
+{
+  "name": "DataHubIDE",
+  "short_name": "DataHubIDE",
+  "description": "Advanced Cloud IDE with local compilation",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e3a8a",
+  "theme_color": "#1e3a8a",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

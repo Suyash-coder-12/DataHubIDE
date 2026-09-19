@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Navigation from "@/components/Navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,6 +16,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "DataHubIDE",
   description: "Advanced Cloud IDE with local compilation and Godbolt fallback.",
+  manifest: "/manifest.json",
+  themeColor: "#1e3a8a",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "DataHubIDE",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -23,7 +31,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Navigation />
+        {children}
+      </body>
     </html>
   );
 }

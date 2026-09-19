@@ -39,7 +39,18 @@ export default function XtermTerminal({ terminalRefOuter }: XtermProps) {
     term.loadAddon(fitAddon);
 
     term.open(terminalRef.current);
-    fitAddon.fit();
+    
+    const safeFit = () => {
+      try {
+        if (terminalRef.current && terminalRef.current.offsetWidth > 0 && terminalRef.current.offsetHeight > 0) {
+          fitAddon.fit();
+        }
+      } catch (e) {
+        // Ignore fit errors if container is not ready
+      }
+    };
+    
+    setTimeout(safeFit, 10);
     termRef.current = term;
 
     // Simulate boot sequence for the UI preview
@@ -49,7 +60,7 @@ export default function XtermTerminal({ terminalRefOuter }: XtermProps) {
     term.write('\r\ndeveloper@workspace:~$ ');
 
     // Handle resize
-    const handleResize = () => fitAddon.fit();
+    const handleResize = () => safeFit();
     window.addEventListener('resize', handleResize);
 
     // Expose methods to parent
