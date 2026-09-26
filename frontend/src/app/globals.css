@@ -1,15 +1,17 @@
 @import "tailwindcss";
 
-@theme {
-  --color-corporate-blue-500: #0f4c81;
-  --color-corporate-blue-600: #0a3d6a;
-  --color-corporate-blue-700: #072a4b;
-  --color-corporate-blue-800: #04192d;
-  --color-corporate-blue-900: #020a13;
+@variant dark (&:where(.dark, .dark *));
 
-  --color-corporate-red-500: #e63946;
-  --color-corporate-red-600: #d62828;
-  --color-corporate-red-700: #b21e20;
+@theme {
+  --color-corporate-blue-500: var(--cb-500, #0f4c81);
+  --color-corporate-blue-600: var(--cb-600, #0a3d6a);
+  --color-corporate-blue-700: var(--cb-700, #072a4b);
+  --color-corporate-blue-800: var(--cb-800, #04192d);
+  --color-corporate-blue-900: var(--cb-900, #020a13);
+
+  --color-corporate-red-500: var(--cr-500, #e63946);
+  --color-corporate-red-600: var(--cr-600, #d62828);
+  --color-corporate-red-700: var(--cr-700, #b21e20);
 }
 
 :root {
@@ -17,11 +19,34 @@
   --foreground: #0f172a;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #020a13;
-    --foreground: #e2e8f0;
-  }
+.dark {
+  --background: #020a13;
+  --foreground: #e2e8f0;
+}
+
+/* Theme overrides */
+:root[data-theme="soft-dark"] {
+  --background: #1a1a24;
+  --foreground: #d1d1d6;
+  --cb-900: #1a1a24;
+  --cb-800: #252533;
+  --cb-700: #323245;
+}
+
+:root[data-theme="light-protanopia"], :root[data-theme="dark-protanopia"] {
+  --cr-500: #d97736;
+  --cr-600: #c26124;
+  --cr-700: #a14a1a;
+}
+
+:root[data-theme="light-tritanopia"], :root[data-theme="dark-tritanopia"] {
+  --cr-500: #ff3333;
+  --cr-600: #cc0000;
+  --cb-500: #0ea5e9;
+  --cb-600: #0284c7;
+  --cb-700: #0369a1;
+  --cb-800: #075985;
+  --cb-900: #0c4a6e;
 }
 
 body {

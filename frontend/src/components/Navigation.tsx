@@ -38,8 +38,15 @@ export default function Navigation() {
               <span className="font-bold text-xl tracking-tight">DataHub<span className="text-corporate-red-500">IDE</span></span>
             </Link>
             
-            <div className="hidden md:flex space-x-4">
-              <Link href="/" className="hover:text-corporate-red-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Workspace</Link>
+            <div className="hidden md:flex space-x-1">
+              <Link href="/problems" className="hover:text-corporate-red-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Problems</Link>
+              <Link href="/contest" className="hover:text-corporate-red-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Contest</Link>
+              <Link href="/discuss" className="hover:text-corporate-red-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Discuss</Link>
+              <Link href="/interview" className="hover:text-corporate-red-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Interview</Link>
+              <Link href="/store" className="hover:text-corporate-red-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Store</Link>
+              
+              <div className="w-px h-5 bg-gray-600 my-auto mx-2"></div>
+              
               <Link href="/search" className="flex items-center hover:text-corporate-red-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                 <Search className="h-4 w-4 mr-1" />
                 Find Friends
