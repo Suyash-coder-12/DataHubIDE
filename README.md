@@ -1,92 +1,124 @@
 # DataHubIDE 🚀
 
-DataHubIDE is an advanced, high-performance Cloud IDE designed specifically for both professional developers and engineering students. It features a sleek, split-pane user interface with real-time compilation capabilities.
+<div align="center">
+  <p><strong>An advanced, high-performance Cloud IDE designed for professionals and students.</strong></p>
+  <p>Experience seamless coding with a sleek UI, real-time compilation, and smart execution routing.</p>
+</div>
 
-## 🌟 Key Features
+---
 
-- **Split-Pane Workspace:** Code editor and terminal/output window side-by-side for maximum productivity.
-- **Multi-Language Support:** Instant boilerplate generation and execution support for C, C++, Python, JavaScript (Node.js), and Go.
-- **Smart Execution Engine (Go Backend):** 
-  - Attempts to run code locally for zero-latency execution.
-  - **Auto-Fallback to Cloud API:** If a local compiler (like `gcc` or `g++`) is missing, the backend seamlessly routes the code to the **Godbolt Compiler Explorer API**, guaranteeing successful execution without requiring heavy local setups.
-- **Monaco Editor Integration:** Enjoy VS Code-like intellisense, syntax highlighting, and smooth typing mechanics.
+## 🌟 Features Overview
+
+- 🖥️ **Split-Pane Workspace:** Intuitive Monaco Editor paired with a robust Xterm.js terminal side-by-side.
+- ⚡ **Smart Execution Engine:** Ultra-fast Go backend that attempts local execution first. If compilers are missing, it intelligently falls back to cloud APIs (e.g., Godbolt) to ensure your code always runs.
+- 🎨 **Accessibility-First Design:** Features comprehensive theme support, including Light/Dark modes, Soft Dark, and specially calibrated palettes for Protanopia, Deuteranopia, and Tritanopia.
+- 🔐 **Secure Authentication:** JWT-based stateless authentication system with beautifully animated Next.js interfaces powered by Framer Motion.
+- 🌐 **Multi-Language Support:** Instant boilerplate generation and execution for C, C++, Python, Node.js, and Go.
 
 ---
 
 ## 🏗️ System Architecture
 
-DataHubIDE is powered by a Next.js (React) frontend and an ultra-fast Go backend. 
+DataHubIDE utilizes a modern, decoupled architecture separating the React frontend from the high-speed Golang execution engine.
 
 ```mermaid
-graph TD
-    subgraph Frontend ["Next.js UI"]
-        IDE["IDE Workspace"]
-        LangSelect["Language Selector"]
-        Editor["Monaco Editor"]
-        Term["Terminal Pane"]
-        
-        IDE --> LangSelect
-        IDE --> Editor
-        IDE --> Term
+flowchart TB
+    subgraph Client ["Frontend (Next.js & React)"]
+        UI[User Interface]
+        AuthStore[(Zustand Auth Store)]
+        Editor[Monaco Editor]
+        Terminal[Xterm.js]
     end
 
-    subgraph Backend ["Go Execution Engine"]
-        API["/api/run"]
-        LocalExec["Local exec.Command"]
-        CloudFallback["Godbolt API Fallback"]
-        
-        API --> LocalExec
-        LocalExec -. "On Missing Compiler" .-> CloudFallback
+    subgraph Server ["Backend (Golang)"]
+        AuthAPI[Auth Endpoints]
+        ExecAPI[Execution Router]
+        DB[(PostgreSQL / User Data)]
+    end
+
+    subgraph Execution_Env ["Execution Environments"]
+        Local[Local OS Compilers]
+        Cloud[Cloud Fallback API]
+    end
+
+    UI <--> AuthStore
+    Editor --> |POST Code| ExecAPI
+    ExecAPI --> |Stream Output| Terminal
+    
+    AuthStore <--> |JWT| AuthAPI
+    AuthAPI <--> DB
+    
+    ExecAPI --> Local
+    Local -. "On Missing Toolchain" .-> Cloud
+```
+
+---
+
+## 🔄 Code Execution Workflow
+
+When a user hits "Run", the system follows a strict, optimized path to ensure the fastest possible execution time.
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Frontend as Next.js Client
+    participant API as Go Backend (/api/run)
+    participant Local as Local Host
+    participant Remote as Remote Compiler API
+
+    User->>Frontend: Clicks "Run Code"
+    Frontend->>API: POST /api/run { language, code }
+    API->>Local: Attempt execution (e.g., `go run`)
+    
+    alt Local Compiler Found
+        Local-->>API: Execution Results (stdout/stderr)
+    else Local Compiler Missing
+        API->>Remote: Route to Cloud Compiler API
+        Remote-->>API: Cloud Execution Results
     end
     
-    Editor -- "POST /api/run" --> API
-    API -- "Return Output" --> Term
-    CloudFallback -- "Compiler Results" --> Term
+    API-->>Frontend: Return Final Output
+    Frontend->>User: Display in Terminal Pane
 ```
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Component | Technology |
+| Layer | Technologies Used |
 | :--- | :--- |
-| **Frontend** | React, Next.js, Tailwind CSS, Monaco Editor, Xterm.js |
-| **Backend** | Go (Golang), net/http |
-| **Execution** | Local OS exec, Godbolt REST API |
+| **Frontend** | React 19, Next.js 16, Tailwind CSS v4, Framer Motion, Monaco Editor, Zustand |
+| **Backend** | Go (Golang), net/http, JWT Authentication |
+| **Execution** | OS `exec.Command`, REST API fallbacks |
+| **Deployment** | Docker, Render (Cloud Hosting) |
 
 ---
 
 ## 🚀 Getting Started
 
-Follow these steps to run DataHubIDE on your local machine:
+Follow these steps to run DataHubIDE locally for development.
 
 ### 1. Start the Go Backend
-The backend handles code execution and API fallback.
+The backend handles code execution, routing, and user authentication.
 ```bash
 cd backend
 go run ./cmd/server/main.go
 ```
-*The server will start on `https://datahubide.onrender.com`*
+*The server will start on `http://localhost:8080`*
 
 ### 2. Start the Frontend
-The frontend provides the interactive user interface.
+The frontend provides the interactive user interface and IDE workspace.
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-*The UI will be accessible at `https://datahubide.onrender.com`*
+*The UI will be accessible at `http://localhost:3000`*
+
+*(Note: Production deployments are available at `https://datahubide.onrender.com`)*
 
 ---
 
-## 💻 Usage
-
-1. Open `https://datahubide.onrender.com` in your browser.
-2. Select your preferred programming language from the left sidebar (C, C++, Python, Go, JS).
-3. The editor will automatically populate with a standard "Hello World" template for that language.
-4. Click the **Run** button at the top right.
-5. The output will be displayed instantly in the terminal pane!
-
----
-
-*Designed and Built for Developers & Engineers.*
+<div align="center">
+  <i>Designed and Built for Developers & Engineers.</i>
+</div>
