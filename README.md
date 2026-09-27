@@ -104,7 +104,7 @@ The backend handles code execution, routing, and user authentication.
 cd backend
 go run ./cmd/server/main.go
 ```
-*The server will start on `http://localhost:8080`*
+*The server will start on `https://datahubide.onrender.com`*
 
 ### 2. Start the Frontend
 The frontend provides the interactive user interface and IDE workspace.
@@ -113,7 +113,7 @@ cd frontend
 npm install
 npm run dev
 ```
-*The UI will be accessible at `http://localhost:3000`*
+*The UI will be accessible at `https://datahubide.onrender.com`*
 
 *(Note: Production deployments are available at `https://datahubide.onrender.com`)*
 
