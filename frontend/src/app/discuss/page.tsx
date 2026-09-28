@@ -1,74 +1,98 @@
 "use client";
 
-import { MessageSquare, ArrowUp, Eye, Search, Filter } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { MessageSquare, Heart, MessageCircle, Share2, TrendingUp, Search } from 'lucide-react';
 
 export default function DiscussPage() {
-  const topics = [
-    { title: "Dynamic Programming Patterns for Beginners", author: "suyash-coder-12", views: "14.2k", votes: 432, replies: 89, tags: ["Dynamic Programming", "Tutorial"] },
-    { title: "How to prepare for FAANG interviews in 2026?", author: "tech_guru", views: "5.1k", votes: 215, replies: 45, tags: ["Interview", "FAANG"] },
-    { title: "O(N) time and O(1) space solution for Problem #124", author: "algo_expert", views: "2.3k", votes: 154, replies: 21, tags: ["Solution", "Optimization"] },
-    { title: "Is Rust becoming standard for systems interviews?", author: "rustacean", views: "8.9k", votes: 312, replies: 124, tags: ["Career", "Rust"] },
-    { title: "Weekly Contest 400 Discussion", author: "admin", views: "1.2k", votes: 88, replies: 32, tags: ["Contest", "Official"] },
+  const posts = [
+    { title: 'How to prepare for System Design Interviews in 2026?', author: 'TechLead', likes: 1240, comments: 89, tags: ['System Design', 'Interview'] },
+    { title: 'Google Interview Experience - L4 SWE (Offer)', author: 'CodeNinja', likes: 892, comments: 142, tags: ['Interview Experience', 'Google'] },
+    { title: 'Dynamic Programming Patterns you must know', author: 'AlgoMaster', likes: 3205, comments: 412, tags: ['Algorithms', 'DP'] },
+    { title: 'Amazon OA Discussion 2026', author: 'SDE1_Dream', likes: 450, comments: 320, tags: ['Amazon', 'OA'] },
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
+
   return (
-    <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900 transition-colors">
-      <div className="max-w-5xl mx-auto space-y-6">
+    <div className="min-h-screen bg-[#fafbfc] text-gray-800 font-sans relative overflow-hidden md:pl-28 pt-8 pb-24 md:pb-10 pr-4 md:pr-6 pl-4">
+      {/* Background Liquid Blobs */}
+      <motion.div 
+        animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }} 
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        className="absolute top-0 right-0 w-[50%] h-[500px] rounded-full bg-emerald-300/20 blur-[120px] pointer-events-none" 
+      />
+      <motion.div 
+        animate={{ scale: [1, 1.3, 1], rotate: [0, -90, 0] }} 
+        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+        className="absolute bottom-0 left-0 w-[40%] h-[400px] rounded-[100%] bg-blue-400/20 blur-[100px] pointer-events-none" 
+      />
+
+      <div className="max-w-7xl mx-auto relative z-10 flex flex-col lg:flex-row gap-6">
         
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Discuss</h1>
-          <button className="px-4 py-2 bg-corporate-blue-600 text-white font-medium rounded-lg hover:bg-corporate-blue-700 transition-colors shadow-sm">
-            New Topic
-          </button>
-        </div>
+        <div className="flex-1 space-y-6">
+          <motion.div initial={{ y: -30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ type: "spring" }} className="flex justify-between items-end">
+            <div>
+              <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight flex items-center">
+                <MessageSquare className="h-8 w-8 text-blue-500 mr-3" />
+                Discussions
+              </h1>
+              <p className="text-gray-500 mt-2 font-medium">Join the community, share experiences, and learn together.</p>
+            </div>
+            <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-xl shadow-lg hover:shadow-blue-500/30 transition-all hover:-translate-y-0.5">
+              New Post
+            </button>
+          </motion.div>
 
-        {/* Search & Filters */}
-        <div className="flex space-x-4">
-          <div className="flex-1 relative">
-            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input 
-              type="text" 
-              placeholder="Search topics, tags, or authors..." 
-              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-corporate-blue-800 border border-gray-200 dark:border-corporate-blue-700 rounded-xl focus:ring-2 focus:ring-corporate-blue-500 focus:outline-none dark:text-white placeholder-gray-400 shadow-sm"
-            />
-          </div>
-          <button className="flex items-center px-4 py-2 bg-white dark:bg-corporate-blue-800 border border-gray-200 dark:border-corporate-blue-700 rounded-xl text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-corporate-blue-700 shadow-sm transition-colors">
-            <Filter className="w-4 h-4 mr-2" /> Tags
-          </button>
-        </div>
+          {/* Search Bar */}
+          <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative group">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+            <input type="text" placeholder="Search posts, tags, authors..." className="w-full bg-white border border-gray-200 text-gray-800 py-3 pl-12 pr-4 rounded-2xl focus:outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] font-medium transition-all" />
+          </motion.div>
 
-        {/* Topics List */}
-        <div className="bg-white dark:bg-corporate-blue-800 rounded-xl border border-gray-200 dark:border-corporate-blue-700 shadow-sm overflow-hidden">
-          <div className="divide-y divide-gray-100 dark:divide-corporate-blue-700">
-            {topics.map((topic, idx) => (
-              <div key={idx} className="p-5 hover:bg-gray-50 dark:hover:bg-corporate-blue-900/30 transition-colors flex items-start gap-4">
-                <div className="flex flex-col items-center justify-center p-2 bg-gray-50 dark:bg-corporate-blue-900 rounded-lg min-w-[60px]">
-                  <ArrowUp className="w-5 h-5 text-gray-400 mb-1 cursor-pointer hover:text-corporate-blue-500" />
-                  <span className="font-bold text-gray-700 dark:text-gray-200">{topic.votes}</span>
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <a href="#" className="text-lg font-semibold text-gray-900 dark:text-white hover:text-corporate-blue-600 dark:hover:text-corporate-blue-400 truncate block mb-1">
-                    {topic.title}
-                  </a>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                    <span className="font-medium text-gray-700 dark:text-gray-300">@{topic.author}</span>
-                    <div className="flex space-x-2">
-                      {topic.tags.map(tag => (
-                        <span key={tag} className="px-2 py-0.5 bg-gray-100 dark:bg-corporate-blue-900 rounded text-xs text-gray-600 dark:text-gray-300">{tag}</span>
-                      ))}
-                    </div>
+          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
+            {posts.map((post, i) => (
+              <motion.div variants={itemVariants} whileHover={{ scale: 1.01 }} key={i} className="bg-white/60 backdrop-blur-3xl border border-gray-200/50 p-5 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] cursor-pointer group hover:bg-white transition-all">
+                <div className="flex justify-between items-start mb-3">
+                  <h2 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 pr-4">{post.title}</h2>
+                  <div className="flex-shrink-0 flex items-center text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-lg">
+                    By {post.author}
                   </div>
                 </div>
-
-                <div className="flex items-center space-x-6 text-sm text-gray-400 shrink-0 mt-1">
-                  <div className="flex items-center"><Eye className="w-4 h-4 mr-1.5" /> {topic.views}</div>
-                  <div className="flex items-center"><MessageSquare className="w-4 h-4 mr-1.5" /> {topic.replies}</div>
+                
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {post.tags.map(tag => (
+                    <span key={tag} className="bg-blue-50 text-blue-600 border border-blue-100 text-xs font-bold px-3 py-1 rounded-full">{tag}</span>
+                  ))}
                 </div>
-              </div>
+
+                <div className="flex items-center space-x-6 text-gray-400 font-bold text-sm">
+                  <span className="flex items-center group-hover:text-pink-500 transition-colors"><Heart className="w-4 h-4 mr-1.5" /> {post.likes}</span>
+                  <span className="flex items-center group-hover:text-blue-500 transition-colors"><MessageCircle className="w-4 h-4 mr-1.5" /> {post.comments}</span>
+                  <span className="flex items-center hover:text-gray-600 transition-colors"><Share2 className="w-4 h-4 mr-1.5" /> Share</span>
+                </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
+
+        <motion.div initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ type: "spring", delay: 0.2 }} className="w-full lg:w-80 space-y-6">
+          <div className="bg-white/60 backdrop-blur-3xl border border-gray-200/50 p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <h3 className="font-extrabold text-gray-900 mb-4 flex items-center text-lg"><TrendingUp className="w-5 h-5 text-blue-500 mr-2" /> Trending Tags</h3>
+            <div className="flex flex-wrap gap-2">
+              {['Amazon', 'Google', 'System Design', 'DP', 'OA', 'Interview Experience', 'Graphs'].map(tag => (
+                <span key={tag} className="bg-gray-50 border border-gray-200 hover:bg-gray-100 text-gray-700 text-xs font-bold px-3 py-1.5 rounded-xl cursor-pointer transition-colors shadow-sm">{tag}</span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
 
       </div>
     </div>

@@ -21,65 +21,122 @@ export default function XtermTerminal({ terminalRefOuter }: XtermProps) {
 
   useEffect(() => {
     if (!terminalRef.current) return;
+    
+    let isMounted = true;
 
-    // Initialize Xterm.js
+    // Initialize Xterm.js with Light Theme
     const term = new Terminal({
       cursorBlink: true,
       theme: {
-        background: '#0d1117',
-        foreground: '#c9d1d9',
-        cursor: '#58a6ff',
-        selectionBackground: 'rgba(88, 166, 255, 0.3)',
+        background: '#ffffff',
+        foreground: '#334155', // slate-700
+        cursor: '#3b82f6', // blue-500
+        selectionBackground: 'rgba(59, 130, 246, 0.3)',
       },
       fontFamily: "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
-      fontSize: 13,
+      fontSize: 14,
     });
     
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
 
-    term.open(terminalRef.current);
-    
-    const safeFit = () => {
-      try {
-        if (terminalRef.current && terminalRef.current.offsetWidth > 0 && terminalRef.current.offsetHeight > 0) {
-          fitAddon.fit();
-        }
-      } catch (e) {
-        // Ignore fit errors if container is not ready
-      }
-    };
-    
-    setTimeout(safeFit, 10);
     termRef.current = term;
 
-    // Simulate boot sequence for the UI preview
-    term.writeln('\x1b[1;32mCloud IDE Workspace initialized.\x1b[0m');
-    term.writeln('Connecting to container workspace-dev-123...');
-    term.writeln('Connected successfully.');
-    term.write('\r\ndeveloper@workspace:~$ ');
+    let isOpened = false;
 
-    // Handle resize
-    const handleResize = () => safeFit();
-    window.addEventListener('resize', handleResize);
+    const safeFit = () => {
+      if (!isMounted) return;
+      try {
+        if (isOpened && terminalRef.current && terminalRef.current.clientWidth > 0) {
+          if (term.element && term.element.clientWidth > 0) {
+            fitAddon.fit();
+          }
+        }
+      } catch (e) {
+        console.warn("xterm fit error:", e);
+      }
+    };
 
-    // Expose methods to parent
+    // Use ResizeObserver for reliable resizing and to delay term.open
+    const resizeObserver = new ResizeObserver((entries) => {
+      if (!isMounted) return;
+      if (!terminalRef.current) return;
+      
+      const { width, height } = entries[0].contentRect;
+      
+      if (width > 0 && height > 0) {
+        if (!isOpened) {
+          try {
+            term.open(terminalRef.current);
+            isOpened = true;
+            
+            // Write initial welcome text
+            term.writeln('\x1b[1;34mDataHubIDE Cloud Workspace initialized.\x1b[0m');
+            term.writeln('Connecting to secure container...');
+            term.writeln('Connected successfully.');
+            term.write('\r\ndeveloper@datahub:~$ ');
+          } catch(e) {
+            console.error("Error opening terminal", e);
+          }
+        }
+        
+        // requestAnimationFrame avoids layout thrashing
+        requestAnimationFrame(() => {
+           if (isMounted) safeFit();
+        });
+      }
+    });
+    
+    resizeObserver.observe(terminalRef.current);
+
+    // Handle user typing for interactive terminal feel
+    let inputBuffer = '';
+    term.onData(e => {
+      if (!isMounted) return;
+      switch (e) {
+        case '\r': // Enter
+          term.writeln('');
+          if (inputBuffer.trim() === 'clear') {
+            term.clear();
+          } else if (inputBuffer.trim() !== '') {
+            term.writeln(`\x1b[31mbash: ${inputBuffer}: command not found\x1b[0m`);
+          }
+          inputBuffer = '';
+          term.write('developer@datahub:~$ ');
+          break;
+        case '\x7F': // Backspace
+          if (inputBuffer.length > 0) {
+            inputBuffer = inputBuffer.slice(0, -1);
+            term.write('\b \b');
+          }
+          break;
+        default: // Normal chars
+          if (e.length === 1 && e.charCodeAt(0) >= 32 && e.charCodeAt(0) <= 126) {
+            inputBuffer += e;
+            term.write(e);
+          }
+      }
+    });
+
     if (terminalRefOuter) {
       terminalRefOuter.current = {
-        write: (text: string) => term.write(text),
-        writeln: (text: string) => term.writeln(text),
-        clear: () => term.clear(),
+        write: (text: string) => isMounted && term.write(text),
+        writeln: (text: string) => isMounted && term.writeln(text),
+        clear: () => isMounted && term.clear(),
       };
     }
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      isMounted = false;
+      resizeObserver.disconnect();
       if (terminalRefOuter) terminalRefOuter.current = null;
-      term.dispose();
+      try {
+        term.dispose();
+      } catch(e) {}
     };
   }, []);
 
   return (
-    <div className="absolute inset-0 p-2" ref={terminalRef}></div>
+    <div className="absolute inset-0 p-3 bg-white" ref={terminalRef}></div>
   );
 }

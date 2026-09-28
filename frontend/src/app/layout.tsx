@@ -17,7 +17,6 @@ export const metadata: Metadata = {
   title: "DataHubIDE",
   description: "Advanced Cloud IDE with local compilation and Godbolt fallback.",
   manifest: "/manifest.json",
-  themeColor: "#1e3a8a",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -25,10 +24,15 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport = {
+  themeColor: "#1e3a8a",
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">

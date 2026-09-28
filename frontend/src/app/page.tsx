@@ -6,13 +6,10 @@ const IDEWorkspace = dynamic(() => import('@/components/IDE/IDEWorkspace'), { ss
 
 export default function Home() {
   return (
-    <main className="flex flex-col min-h-screen bg-[#0d1117] text-white overflow-hidden">
-      <div className="flex-1 overflow-hidden">
+    <main className="flex flex-col min-h-screen bg-[#fafbfc] text-gray-900 overflow-hidden md:pl-28 pt-4 pb-24 md:pb-4 pr-4 pl-4 md:pl-0">
+      <div className="flex-1 overflow-hidden rounded-[2rem] shadow-[0_8px_40px_rgb(0,0,0,0.06)] border border-gray-200/50 bg-white relative">
         <IDEWorkspace />
       </div>
-      <footer className="text-center py-2 text-sm text-gray-500 bg-[#161b22] border-t border-[#30363d]">
-        Designed and developed by Suyash Rathod
-      </footer>
     </main>
   );
 }

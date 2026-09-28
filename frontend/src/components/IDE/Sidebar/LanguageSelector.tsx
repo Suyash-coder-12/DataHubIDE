@@ -17,16 +17,16 @@ interface LanguageSelectorProps {
 
 export default function LanguageSelector({ activeFile, setActiveFile }: LanguageSelectorProps) {
   return (
-    <div className="w-14 bg-[#181a1f] border-r border-[#282c34] flex flex-col items-center py-4 space-y-4 shrink-0">
+    <div className="w-14 bg-white border-r border-gray-200 flex flex-col items-center py-4 space-y-4 shrink-0 shadow-sm z-10">
       {LANGUAGES.map((lang) => (
         <button
           key={lang.id}
           onClick={() => setActiveFile(lang.name)}
           title={lang.label}
-          className={`w-10 h-10 flex items-center justify-center rounded-md font-bold text-xs transition-colors ${
+          className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold text-xs transition-all ${
             activeFile === lang.name 
-              ? 'bg-[#282c34] text-white border-l-2 border-blue-500 rounded-none w-full' 
-              : 'text-[#5c6370] hover:text-white hover:bg-[#282c34]'
+              ? 'bg-blue-50 text-blue-600 shadow-sm border border-blue-100' 
+              : 'text-gray-400 hover:text-blue-500 hover:bg-gray-50'
           }`}
         >
           {lang.icon}

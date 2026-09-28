@@ -64,7 +64,7 @@ export default function MonacoEditorComponent({ activeFile, editorRefOuter }: Mo
       <Editor
         height="100%"
         language={getLanguage(activeFile)}
-        theme="vs-dark"
+        theme="light"
         defaultValue={TEMPLATES[activeFile] || ""}
         onMount={handleEditorDidMount}
         beforeMount={handleBeforeMount}

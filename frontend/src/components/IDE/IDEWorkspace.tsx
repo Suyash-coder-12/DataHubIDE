@@ -6,6 +6,9 @@ import { useAuthStore } from '@/store/authStore';
 import MonacoEditor from './EditorPane/MonacoEditor';
 import XtermTerminal, { TerminalRef } from './TerminalPane/XtermTerminal';
 import LanguageSelector from './Sidebar/LanguageSelector';
+import { motion } from 'framer-motion';
+import { Play, Loader2, Maximize2, MoreHorizontal } from 'lucide-react';
+import CoolLoader from '../CoolLoader';
 
 export default function IDEWorkspace() {
   const [activeFile, setActiveFile] = useState('main.c');
@@ -26,7 +29,7 @@ export default function IDEWorkspace() {
     }
   }, [token, router, mounted]);
 
-  if (!mounted || !token) return null;
+  if (!mounted || !token) return <CoolLoader />;
 
   const getLanguage = (filename: string) => {
     if (filename.endsWith('.go')) return 'go';
@@ -75,7 +78,7 @@ export default function IDEWorkspace() {
   };
 
   return (
-    <div className="flex h-screen w-full bg-[#181a1f] text-[#abb2bf] font-sans overflow-hidden">
+    <div className="flex h-full w-full bg-white text-gray-800 font-sans overflow-hidden rounded-[2rem]">
       
       {/* Sidebar / Language Selector */}
       <LanguageSelector activeFile={activeFile} setActiveFile={setActiveFile} />
@@ -84,46 +87,50 @@ export default function IDEWorkspace() {
       <div className="flex-1 flex min-w-0">
         
         {/* Left Pane: Code Editor */}
-        <div className="flex-1 flex flex-col min-w-0 border-r border-[#282c34] dark:border-corporate-blue-700">
+        <div className="flex-1 flex flex-col min-w-0 border-r border-gray-200">
           {/* Editor Header */}
-          <div className="h-12 bg-corporate-blue-800 flex items-center justify-between px-4 text-white">
-             <div className="text-sm font-semibold">{activeFile}</div>
-             <button 
+          <div className="h-14 bg-gray-50/80 backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-4 text-gray-700">
+             <div className="text-sm font-bold bg-white px-3 py-1.5 rounded-lg shadow-sm border border-gray-200">{activeFile}</div>
+             <motion.button 
+               whileHover={{ scale: 1.05 }}
+               whileTap={{ scale: 0.95 }}
                onClick={handleRunCode}
                disabled={isRunning}
-               className={`text-white px-4 py-1.5 text-sm rounded transition-colors shadow-sm font-medium flex items-center space-x-1 ${isRunning ? 'bg-gray-600' : 'bg-corporate-red-500 hover:bg-corporate-red-600'}`}>
+               className={`px-4 py-2 text-sm rounded-xl transition-all shadow-md font-bold flex items-center space-x-2 ${isRunning ? 'bg-gray-200 text-gray-500 shadow-none' : 'bg-blue-500 hover:bg-blue-600 text-white hover:shadow-blue-500/30'}`}>
                {isRunning ? (
                  <>
-                   <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                   <Loader2 className="animate-spin h-4 w-4" />
                    <span>Running</span>
                  </>
                ) : (
                  <>
-                   <span>Run</span>
-                   <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" /></svg>
+                   <Play className="h-4 w-4 fill-current" />
+                   <span>Run Code</span>
                  </>
                )}
-             </button>
+             </motion.button>
           </div>
           {/* Code Editor Container */}
-          <div className="flex-1 relative bg-[#282c34]">
+          <div className="flex-1 relative bg-white">
              <MonacoEditor activeFile={activeFile} editorRefOuter={editorRefOuter} />
           </div>
         </div>
 
         {/* Right Pane: Terminal / Output */}
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 bg-[#fafbfc]">
           {/* Terminal Header */}
-          <div className="h-12 bg-corporate-blue-800 flex items-center justify-between px-4 text-white">
-             <div className="text-sm font-semibold">Output</div>
-             <div className="flex space-x-2 text-[#5c6370]">
-                {/* Placeholder Icons for right side of output */}
-                <button className="hover:text-[#abb2bf]"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg></button>
-                <button className="hover:text-[#abb2bf]"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg></button>
+          <div className="h-14 bg-gray-50/80 backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-4 text-gray-700">
+             <div className="text-sm font-bold flex items-center">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2 shadow-[0_0_8px_rgb(16,185,129)]"></span>
+                Console Output
+             </div>
+             <div className="flex space-x-2 text-gray-400">
+                <motion.button whileHover={{ scale: 1.1, color: '#3b82f6' }} className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm transition-all"><Maximize2 className="h-4 w-4" /></motion.button>
+                <motion.button whileHover={{ scale: 1.1, color: '#3b82f6' }} className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm transition-all"><MoreHorizontal className="h-4 w-4" /></motion.button>
              </div>
           </div>
           {/* Terminal Container */}
-          <div className="flex-1 relative bg-[#181a1f] p-2">
+          <div className="flex-1 relative p-1">
             <XtermTerminal terminalRefOuter={terminalRefOuter} />
           </div>
         </div>
