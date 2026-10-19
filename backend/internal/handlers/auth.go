@@ -84,7 +84,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request", http.StatusBadRequest)
 		return
 	}
-
+// The variable has changed and the sources are divided into two parts there. 
 	var user db.User
 	if err := db.DB.Where("student_id = ?", req.StudentID).First(&user).Error; err != nil {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
